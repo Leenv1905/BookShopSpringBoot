@@ -1,0 +1,2 @@
+Bảng customer+admin đổi thành user để quản lý chung admin và user
+lever (roles) Vai trò -> String
