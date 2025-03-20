@@ -21,6 +21,7 @@ public class ServiceUser {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // PHẦN NÀY DÀNH CHO USER, CÁC PHẦN KHÁC SẼ KHÔNG CÓ
     // public EntityUser saveEntityUser(EntityUser entityUser) {
     // KHÔNG MÃ HÓA MẬT KHẨU
     // entityUser.setDateJoin(new java.sql.Date(System.currentTimeMillis()));
@@ -47,6 +48,8 @@ public class ServiceUser {
     }
     // BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     // return passwordEncoder.matches(rawPassword, encodedPassword);
+    // PHẦN NÀY DÀNH CHO USER, CÁC PHẦN KHÁC SẼ KHÔNG CÓ
+
 
     public Optional<EntityUser> findByEmail(String email) { // Phương thức tìm kiếm theo email
         return jpaUser.findByEmail(email);
