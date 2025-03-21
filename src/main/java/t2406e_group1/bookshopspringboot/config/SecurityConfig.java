@@ -29,14 +29,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Tắt CSRF để tránh lỗi với Postman
             .authorizeHttpRequests(auth -> auth
             .requestMatchers("/test/**").permitAll() // Chấp nhận tất cả từ API này
-
+            .requestMatchers("/discounts/**").permitAll() // Chấp nhận tất cả từ API này
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Cho phép preflight requests.
                 // Cho phép OPTIONS request (cho CORS) và cho phép truy cập /api/auth/login mà không cần token:
                 // khi frontend gửi sẽ gửi OPTIONS trước HEADER nên ko có sự cho phéo này sẽ lỗi
                 .requestMatchers("/api/auth/login").permitAll() // ⚠️ Đảm bảo dòng này có mặt permitAll() để mở API login (không cần JWT)
                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll() // Cho phép đăng ký tài khoản mà không cần JWT(phải đặt trên authenticate)
-                .anyRequest().permitAll()
                 // CÁC CÁI CÓ ROLE CHO Ở DƯỚI
                 .requestMatchers(HttpMethod.GET, "/api/user/**").hasRole("ADMIN") // Chỉ ADMIN xem danh sách User
                 // Dùng .hasRole("USER") hoặc .hasRole("ADMIN") (không cần tiền tố ROLE_ vì Spring tự thêm)
@@ -44,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/**").hasRole("ADMIN") // Admin quản lý user
                 .requestMatchers(HttpMethod.GET, "/api/product/**").hasRole("USER") // USER được xem sản phẩm
                 .requestMatchers("/api/product/**").hasRole("ADMIN") // Chỉ admin thêm sửa xóa sản phẩm
+                .anyRequest().permitAll()
 
                 // THÊM CÁC PHƯƠNG THỨC KHÁC Ở ĐÂY
             )

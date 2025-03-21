@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import t2406e_group1.bookshopspringboot.review.ServiceReview;
-import t2406e_group1.bookshopspringboot.review.EntityReview;
+// import t2406e_group1.bookshopspringboot.review.ServiceReview;
+// import t2406e_group1.bookshopspringboot.review.EntityReview;
 // import t2406e_group1.bookshopspringboot.review.EntityReview;
 
 import java.util.List;

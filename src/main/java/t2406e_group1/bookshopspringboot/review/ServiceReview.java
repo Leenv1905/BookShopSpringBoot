@@ -3,13 +3,13 @@ package t2406e_group1.bookshopspringboot.review;
 
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+// import org.springframework.security.crypto.password.PasswordEncoder;
 // Bảo mật mật khẩu bằng spring security
 import org.springframework.stereotype.Service;
 
-import t2406e_group1.bookshopspringboot.review.JpaReview;
-import t2406e_group1.bookshopspringboot.user.EntityUser;
-import t2406e_group1.bookshopspringboot.user.JpaUser;
+// import t2406e_group1.bookshopspringboot.review.JpaReview;
+// import t2406e_group1.bookshopspringboot.user.EntityUser;
+// import t2406e_group1.bookshopspringboot.user.JpaUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class ServiceReview {
         return jpaReview.save(entityReview);
     }
       
-    public Optional<EntityReview> findByTenKhach(String tenKhach) { // Phương thức tìm kiếm theo email
+    public Optional<EntityReview> findByTenKhach(String tenKhach) { // Phương thức tìm kiếm theo tên khách
         return jpaReview.findByTenKhach(tenKhach);
     }
 
