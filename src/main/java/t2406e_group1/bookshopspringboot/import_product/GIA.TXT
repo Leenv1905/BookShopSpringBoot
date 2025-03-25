@@ -1,0 +1,232 @@
+THIẾT KẾ QUY TRÌNH NHẬP SẢN PHẨM LIÊN KẾT VỚI BẢNG PRODUCT
+
+Để thiết kế chức năng nhập sản phẩm một cách hiệu quả với bảng importProduct, bạn cần xác định mối quan hệ giữa bảng product (sản phẩm hiện có) và bảng importProduct (thông tin nhập sản phẩm). Dưới đây là một số gợi ý:
+
+Tạo bảng importProduct:
+
+Các cột có thể bao gồm:
+
+id (Primary Key): Mã định danh duy nhất cho mỗi lần nhập.
+
+product_id (Foreign Key): Tham chiếu đến id trong bảng product.
+
+import_quantity: Số lượng sản phẩm được nhập.
+
+import_price: Giá nhập (nếu giá nhập khác giá bán).
+
+import_date: Ngày nhập sản phẩm.
+
+supplier: Nhà cung cấp (nếu cần quản lý thông tin nhà cung cấp).
+
+Liên kết giữa bảng product và importProduct:
+
+Sử dụng Foreign Key: Trường product_id trong bảng importProduct sẽ liên kết với trường id trong bảng product. Điều này đảm bảo mỗi bản ghi trong bảng importProduct tương ứng với một sản phẩm cụ thể trong bảng product.
+
+Quan hệ Một-Nhiều (One-to-Many): Một sản phẩm trong bảng product có thể có nhiều lần nhập trong bảng importProduct.
+
+Xử lý logic nghiệp vụ:
+
+Khi nhập sản phẩm, cập nhật bảng importProduct để ghi lại lịch sử nhập.
+
+Đồng thời, cập nhật bảng product để tăng số lượng sản phẩm (quantity) hiện có dựa trên giá trị import_quantity trong bảng importProduct.
+
+Ví dụ thiết kế cơ sở dữ liệu:
+
+////// Bảng product: //////
+
+CREATE TABLE product (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    quantity INT DEFAULT 0,
+    price DECIMAL(10, 2) NOT NULL
+);
+
+////// Bảng importProduct: ///////
+
+CREATE TABLE importProduct (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    product_id BIGINT NOT NULL,
+    import_quantity INT NOT NULL,
+    import_price DECIMAL(10, 2),
+    import_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    supplier VARCHAR(255),
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
+);
+
+//////////
+
+API xử lý (Java Spring Boot):
+
+Import Product API: Tạo controller để nhận dữ liệu nhập sản phẩm và lưu vào bảng importProduct, đồng thời cập nhật bảng product.
+
+Example Service Logic:
+
+Lưu record vào bảng importProduct.
+
+Lấy sản phẩm từ product dựa trên product_id, sau đó cộng thêm số lượng import_quantity.
+
+Lợi ích của thiết kế này:
+
+Theo dõi được lịch sử nhập hàng chi tiết.
+
+Dễ dàng quản lý số lượng tồn kho.
+
+Hỗ trợ mở rộng như thêm báo cáo nhập hàng, phân tích dữ liệu nhà cung cấp.
+
+////// LOGIC XỬ LÝ SỐ LƯỢNG, GIÁ, NHÀ CUNG CẤP/////
+
+Khi mỗi lần nhập sản phẩm có giá khác nhau, bạn có thể xử lý giá trong bảng product theo một số cách tùy vào yêu cầu và logic kinh doanh của bạn. Dưới đây là một số giải pháp:
+
+1. Cập nhật giá trung bình cho bảng product:
+Ý tưởng: Mỗi lần nhập sản phẩm, tính lại giá trung bình của sản phẩm dựa trên giá nhập và số lượng nhập. Giá trung bình sẽ thay đổi dựa trên các lần nhập mới.
+
+///////
+Cách tính giá trung bình:
+Giá trung bình mới = (Số lượng hiện có * Giá hiện tại + Số lượng nhập * Giá nhập) / (Tổng số lượng mới)
+///////
+
+Cách xử lý trong code:
+
+Khi lưu dữ liệu vào bảng importProduct, cập nhật lại cột price và quantity trong bảng product dựa trên công thức trên.
+
+Lợi ích: Phù hợp nếu giá bán ra liên quan trực tiếp đến giá nhập và muốn duy trì sự nhất quán.
+
+2. Giữ nguyên giá bán trong bảng product:
+Ý tưởng: Không thay đổi giá trong bảng product sau mỗi lần nhập. Giá bán được quản lý độc lập với giá nhập.
+
+Xử lý:
+
+Cột price trong bảng product sẽ đại diện cho giá bán cuối cùng.
+
+Giá nhập sẽ được lưu riêng trong bảng importProduct (import_price) để theo dõi lịch sử giá nhập của từng lần nhập.
+
+Lợi ích: Phù hợp khi giá bán được xác định theo chiến lược kinh doanh, không phụ thuộc nhiều vào giá nhập.
+
+3. Cập nhật giá nhập cuối cùng (Last Import Price):
+Ý tưởng: Giá trong bảng product sẽ phản ánh giá nhập của lần nhập mới nhất.
+
+Cách xử lý:
+
+Khi thêm bản ghi vào bảng importProduct, cập nhật price trong bảng product bằng giá trị import_price của lần nhập đó.
+
+Lợi ích: Dễ dàng quản lý nếu giá bán được điều chỉnh thường xuyên dựa trên giá nhập.
+
+4. Quản lý giá bán động (Dynamic Pricing):
+Ý tưởng: Tách biệt hoàn toàn giá nhập và giá bán. Dùng bảng importProduct để theo dõi giá nhập. Giá bán sẽ được tính toán động dựa trên các yếu tố như giá nhập gần đây, chi phí vận hành, hoặc các yếu tố thị trường.
+
+Ví dụ thiết kế bổ sung:
+
+Thêm bảng pricingRules: Để lưu các quy tắc tính giá bán từ giá nhập hoặc các thông số khác.
+
+Gợi ý triển khai trong hệ thống:
+Nếu bạn muốn sử dụng cách cập nhật giá trung bình:
+
+//////////////
+public void updateProductPriceAndQuantity(Long productId, int importQuantity, double importPrice) {
+    Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+    int totalQuantity = product.getQuantity() + importQuantity;
+    double newAveragePrice = (product.getQuantity() * product.getPrice() + importQuantity * importPrice) / totalQuantity;
+    product.setQuantity(totalQuantity);
+    product.setPrice(newAveragePrice);
+    productRepository.save(product);
+}
+///////////////
+Nếu muốn giữ giá bán cố định, chỉ cần cập nhật quantity mà không đụng đến price.
+
+
+//////
+Để xử lý trường hợp một sản phẩm có nhiều nhà cung cấp, bạn có thể thiết kế cơ sở dữ liệu và logic xử lý như sau:
+
+1. Thêm bảng supplier (Nhà cung cấp):
+Tạo bảng để lưu thông tin chi tiết về nhà cung cấp.
+
+Các cột trong bảng supplier có thể bao gồm:
+
+id (Primary Key): Mã định danh nhà cung cấp.
+
+name: Tên nhà cung cấp.
+
+contact_info: Thông tin liên hệ (email, số điện thoại, địa chỉ).
+
+other_details: Các thông tin khác liên quan đến nhà cung cấp (nếu cần).
+///////////
+CREATE TABLE supplier (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    contact_info VARCHAR(255),
+    other_details TEXT
+);
+//////////
+2. Liên kết giữa importProduct và supplier:
+Thêm cột supplier_id vào bảng importProduct, liên kết với bảng supplier.
+
+Điều này giúp lưu thông tin mỗi lần nhập sản phẩm và chỉ rõ nhà cung cấp nào đã cung cấp sản phẩm đó.
+///////////
+ALTER TABLE importProduct
+ADD supplier_id BIGINT NOT NULL,
+ADD FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE;
+////////////
+
+3. Tạo bảng trung gian nếu cần quản lý nhà cung cấp và sản phẩm:
+Nếu một sản phẩm được cung cấp bởi nhiều nhà cung cấp và bạn muốn quản lý trực tiếp mối quan hệ này, có thể tạo bảng trung gian product_supplier.
+
+Bảng product_supplier:
+
+product_id: Tham chiếu đến sản phẩm trong bảng product.
+
+supplier_id: Tham chiếu đến nhà cung cấp trong bảng supplier.
+
+///////////
+CREATE TABLE product_supplier (
+    product_id BIGINT NOT NULL,
+    supplier_id BIGINT NOT NULL,
+    PRIMARY KEY (product_id, supplier_id),
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
+    FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE
+);
+/////////////
+4. Logic nhập sản phẩm và nhà cung cấp:
+Khi nhập sản phẩm:
+
+Xác định nhà cung cấp tương ứng (supplier_id).
+
+Lưu bản ghi nhập vào bảng importProduct, bao gồm thông tin nhà cung cấp (supplier_id) và sản phẩm (product_id).
+
+Khi quản lý sản phẩm:
+
+Có thể truy vấn bảng product_supplier để biết sản phẩm nào có thể được cung cấp bởi nhà cung cấp nào.
+
+5. Ví dụ xử lý logic trong Java Spring Boot:
+Thêm nhà cung cấp:
+
+API để thêm nhà cung cấp mới vào bảng supplier.
+
+Nhập sản phẩm từ nhà cung cấp:
+
+API nhận thông tin nhập sản phẩm, bao gồm product_id, supplier_id, import_quantity, import_price.
+
+Lưu vào bảng importProduct và cập nhật bảng product.
+///////////////
+public void importProduct(Long productId, Long supplierId, int quantity, double price) {
+    ImportProduct importProduct = new ImportProduct();
+    importProduct.setProductId(productId);
+    importProduct.setSupplierId(supplierId);
+    importProduct.setImportQuantity(quantity);
+    importProduct.setImportPrice(price);
+    importProductRepository.save(importProduct);
+
+    // Update product quantity
+    Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+    product.setQuantity(product.getQuantity() + quantity);
+    productRepository.save(product);
+}
+/////////////
+6. Lợi ích của thiết kế:
+Theo dõi chi tiết nhà cung cấp từng sản phẩm và lịch sử nhập hàng.
+
+Dễ dàng quản lý mối quan hệ giữa sản phẩm và nhà cung cấp.
+
+Hỗ trợ mở rộng hệ thống như báo cáo hiệu quả của từng nhà cung cấp.
+
+
+

@@ -72,6 +72,8 @@ public class JwtFilter extends OncePerRequestFilter {
         if (request.getRequestURI().equals("/api/auth/login")
         || request.getRequestURI().equals("/discounts")
         || request.getRequestURI().equals("/test")
+        || request.getRequestURI().equals("/test2/product")
+
         || ("POST".equalsIgnoreCase(method) && path.equals("/api/user"))) {
             logger.debug("Bypassing JwtFilter for login endpoint");
             filterChain.doFilter(request, response);
