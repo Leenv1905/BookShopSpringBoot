@@ -1,0 +1,26 @@
+
+// VẤN ĐỀ LIÊN QUAN ĐẾN NHẬP THÔNG TIN SẢN PHẨM
+
+Viết dài hơn dùng StringBuilder (Ví dụ áp dụng cho nội dung cuốn sách. Tuy nhiên đây là web bán sách ko cần lắm)
+Web tin tức thì sẽ cần
+
+// VẤN ĐỀ LIÊN QUAN ĐƠN HÀNG - SẢN PHẨM
+ - Nếu giá mỗi lần nhập khác nhau:
+    ///////
+    Cách tính giá trung bình:
+    Giá trung bình mới = (Số lượng hiện có * Giá hiện tại + Số lượng nhập * Giá nhập) / (Tổng số lượng mới)
+
+    Lợi ích: Phù hợp nếu giá bán ra liên quan trực tiếp đến giá nhập và muốn duy trì sự nhất quán.
+    ///////
+
+/// HIỆN TẠI Ở ĐÂY CHƯA CHO QUAN HỆ (SẢN PHẨM - NHÀ CUNG CẤP) Gây rối nghiệp vụ, chưa cần thiết
+
+
+- Đặt tên biến theo con lạc đà
+
+- Tên file sẽ như sau:
+ - Entity + Ngiệp vụ
+ - Jpa + Ngiệp vụ
+ - Service + Ngiệp vụ
+ - Controller + Ngiệp vụ
+
