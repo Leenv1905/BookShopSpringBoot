@@ -1,0 +1,61 @@
+1. AUTHCONTROLLER
+    - Login
+    - Logout
+2. SECURITY - PHÂN QUYỀN TRUY CẬP
+    - Theo danh sách API bên dưới
+3. USER
+    - Đăng ký POST          /api/user               KO CẦN, MẶC ĐỊNH ROLE LÀ USER
+    - Đăng nhập GET         /api/user               KO CẦN
+    - Sửa PUT ID            /api/user/{id}          ROLE_ADMIN
+    - Xóa DELETE ID         /api/user/{id}          ROLE_ADMIN
+    - Find email            /api/user/{email}       ROLE_ADMIN
+4. PRODUCT
+    - Add                   /api/product            ROLE_ADMIN
+    - View                  /api/product            ROLE_ADMIN  ROLE_USER
+    - View id               /api/product/{id}       ROLE_ADMIN  ROLE_USER
+    - Edit                  /api/product/{id}       ROLE_ADMIN
+    - Del                   /api/product/{id}       ROLE_ADMIN
+    - Find tên              /api/product            ROLE_ADMIN  ROLE_USER
+    - Find giá              /api/product            ROLE_ADMIN  ROLE_USER
+    IMAGE PRODUCT (Có thể gộp CRUD trong product)
+    - Add
+    - View
+    - View id
+    - Edit
+    - Del
+    IMPORT PRODUCT (Gộp trong product)
+    - Add
+    - View
+    - View id
+    - Edit
+    - Del
+5. MAKETING (DISCOUNT)
+    - Add                   /api/discount           ROLE_ADMIN
+    - View                  /api/discount           ROLE_ADMIN
+    - View id               /api/discount/{id}      ROLE_ADMIN
+    - Edit                  /api/discount/{id}      ROLE_ADMIN
+    - Del                   /api/discount/{id}      ROLE_ADMIN
+6. ORDER Đơn hàng
+    - Add                   /api/order              ROLE_ADMIN  ROLE_USER
+    - View                  /api/order              ROLE_ADMIN  
+    - View id               /api/order/{id}         ROLE_ADMIN  ROLE_USER
+    - Edit                  /api/order/{id}         ROLE_ADMIN
+    - Del                   /api/order/{id}         ROLE_ADMIN
+    ORDER DETAIL (Gộp trong Order)
+    - Add
+    - View
+    - View id
+    - Edit
+    - Del
+7. REVIEW
+    - Add                   /api/review             ROLE_ADMIN  ROLE_USER
+    - View                  /api/review             ROLE_ADMIN  ROLE_USER
+    - View id               /api/review/{id}        ROLE_ADMIN
+    - Edit                  /api/review/{id}        ROLE_ADMIN
+    - Del                   /api/review/{id}        ROLE_ADMIN  ROLE_USER
+8. SUPPLIER
+    - Add                   /api/supplier           ROLE_ADMIN
+    - View                  /api/supplier           ROLE_ADMIN
+    - View id               /api/supplier/{id}      ROLE_ADMIN
+    - Edit                  /api/supplier/{id}      ROLE_ADMIN
+    - Del                   /api/supplier/{id}      ROLE_ADMIN
