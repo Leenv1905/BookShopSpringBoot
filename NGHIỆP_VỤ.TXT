@@ -23,12 +23,12 @@
     - View id
     - Edit
     - Del
-    IMPORT PRODUCT (Gộp trong product)
-    - Add
-    - View
-    - View id
-    - Edit
-    - Del
+    IMPORT PRODUCT
+    - Add                   /api/import-products
+    - View                  /api/import-products
+    - View id               /api/import-products
+    - Edit                  /api/import-products
+    - Del                   /api/import-products
 5. MAKETING (DISCOUNT)
     - Add                   /api/discount           ROLE_ADMIN
     - View                  /api/discount           ROLE_ADMIN

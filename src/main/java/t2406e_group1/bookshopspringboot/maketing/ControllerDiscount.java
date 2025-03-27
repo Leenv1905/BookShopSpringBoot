@@ -1,50 +1,71 @@
 package t2406e_group1.bookshopspringboot.maketing;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-
-
 @RestController
-@RequestMapping("/discounts")
+@RequestMapping("/api/discounts") // Endpoint chính của API
 public class ControllerDiscount {
-    
-        @Autowired
+
+    @Autowired
     private ServiceDiscount serviceDiscount;
 
-        // LẤY THÔNG TIN TẤT CẢ Discount
+    //  LẤY DANH SÁCH TẤT CẢ KHUYẾN MÃI
     @GetMapping
-    public List<EntityDiscount> getAllDiscount() { // Lấy danh sách tất cả Discount
-        return serviceDiscount.findAll(); // Gọi phương thức findAll() từ ServiceDiscount
+    public ResponseEntity<List<EntityDiscount>> getAllDiscounts() {
+        List<EntityDiscount> discounts = serviceDiscount.findAll();
+        return ResponseEntity.ok(discounts);
     }
 
-        // LẤY THÔNG TIN Discount THEO ID
+    //  LẤY THÔNG TIN KHUYẾN MÃI THEO ID
     @GetMapping("/{id}")
     public ResponseEntity<EntityDiscount> getDiscountById(@PathVariable int id) {
-    Optional<EntityDiscount> entityDiscount = serviceDiscount.findById(id); // Gọi phương thức
-    // findById() từ ServiceDiscount
-    // return entityDiscount.map(discount -> ResponseEntity.ok(discount)).orElseGet(() ->
-    return entityDiscount.map(ResponseEntity::ok).orElseGet(() ->
-
-    ResponseEntity.notFound().build());
+        Optional<EntityDiscount> discount = serviceDiscount.findById(id);
+        return discount.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-   // POST
+    //  LẤY KHUYẾN MÃI THEO GIÁ SALE
+    @GetMapping("/saleprice/{salePrice}")
+    public ResponseEntity<List<EntityDiscount>> getDiscountsBySalePrice(@PathVariable float salePrice) {
+        List<EntityDiscount> discounts = serviceDiscount.findBySalePrice(salePrice);
+        if (discounts.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(discounts);
+    }
+      
+    //  THÊM KHUYẾN MÃI MỚI
     @PostMapping
-    public EntityDiscount createDiscount(@RequestBody EntityDiscount entityDiscount) {
-    return serviceDiscount.saveEntityDiscount(entityDiscount);
+    public ResponseEntity<EntityDiscount> createDiscount(@RequestBody EntityDiscount entityDiscount) {
+        EntityDiscount savedDiscount = serviceDiscount.saveEntityDiscount(entityDiscount);
+        return ResponseEntity.ok(savedDiscount);
     }
-    // Gọi phương thức saveEntityDiscount() từ
-    // EntityDiscount, SẻviceDiscount
 
+    //  CẬP NHẬT THÔNG TIN KHUYẾN MÃI
+    @PutMapping("/{id}")
+    public ResponseEntity<EntityDiscount> updateDiscount(@PathVariable int id, @RequestBody EntityDiscount updatedDiscount) {
+        Optional<EntityDiscount> existingDiscount = serviceDiscount.findById(id);
+        if (existingDiscount.isPresent()) {
+            updatedDiscount.setId(id); // Đảm bảo ID không thay đổi
+            EntityDiscount savedDiscount = serviceDiscount.saveEntityDiscount(updatedDiscount);
+            return ResponseEntity.ok(savedDiscount);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
+    // XOÁ KHUYẾN MÃI THEO ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDiscount(@PathVariable int id) {
+        if (serviceDiscount.existsById(id)) {
+            serviceDiscount.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
