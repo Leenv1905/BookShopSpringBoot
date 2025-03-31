@@ -33,6 +33,8 @@ public class SecurityConfig {
             .requestMatchers("/api/import-products/**").permitAll() // Chấp nhận tất cả từ API này
             .requestMatchers("/api/discounts/**").permitAll() // Chấp nhận tất cả từ API này
             .requestMatchers("/api/product/**").permitAll() // Chấp nhận tất cả từ API này
+            .requestMatchers("/api/orders/**").permitAll() // Chấp nhận tất cả từ API này
+
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Cho phép preflight requests.
                 // Cho phép OPTIONS request (cho CORS) và cho phép truy cập /api/auth/login mà không cần token:
