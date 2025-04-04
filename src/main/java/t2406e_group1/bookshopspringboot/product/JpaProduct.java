@@ -9,7 +9,12 @@ public interface JpaProduct extends JpaRepository<EntityProduct, Integer> {
     // Tìm sản phẩm theo tên
     Optional<EntityProduct> findByName(String name);
     
-    // Tìm sản phẩm theo danh mục
-    // List<EntityProduct> findByCategory(String category);
+    // Tìm sản phẩm theo giá
+    List<EntityProduct> findByPrice(Float price);
     
+    //Tìm sản phẩm theo thể loại
+    List<EntityProduct> findByCategory(String category);
+
+    //Tìm sản phẩm theo ngôn ngữ
+    List<EntityProduct> findByLanguage(String language);
 }
