@@ -10,8 +10,6 @@ import java.util.Optional;
 @Repository // Đánh dấu đây là một Repository (DAO - Data Access Object)
 public interface JpaDiscount extends JpaRepository<EntityDiscount, Integer> {
 
-    // Tìm kiếm khuyến mãi theo salePrice
-    List<EntityDiscount> findBySalePrice(Float salePrice);
   
     
     // Nếu cần các phương thức truy vấn tùy chỉnh, có thể khai báo thêm tại đây
