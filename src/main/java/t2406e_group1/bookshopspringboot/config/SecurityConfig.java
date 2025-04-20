@@ -46,8 +46,8 @@ public class SecurityConfig {
                 // Dùng .hasRole("USER") hoặc .hasRole("ADMIN") (không cần tiền tố ROLE_ vì Spring tự thêm)
                 // .requestMatchers("/api/user/**").authenticated() // Yêu cầu có JWT để truy cập các API liên quan đến user (đăng ký thì loại trừ bên JwTFilter)
                 .requestMatchers("/api/user/**").hasRole("ADMIN") // Admin quản lý user
-                .requestMatchers(HttpMethod.GET, "/api/product/**").hasRole("USER") // USER được xem sản phẩm
-                .requestMatchers("/api/product/**").hasRole("ADMIN") // Chỉ admin thêm sửa xóa sản phẩm
+                // .requestMatchers(HttpMethod.GET, "/api/product/**").hasRole("USER") // USER được xem sản phẩm
+                // .requestMatchers("/api/product/**").hasRole("ADMIN") // Chỉ admin thêm sửa xóa sản phẩm
                 .anyRequest().permitAll()
 
                 // THÊM CÁC PHƯƠNG THỨC KHÁC Ở ĐÂY

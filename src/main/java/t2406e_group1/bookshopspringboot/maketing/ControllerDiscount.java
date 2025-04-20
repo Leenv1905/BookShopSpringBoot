@@ -4,25 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/discounts") // Endpoint chính của API
+@RequestMapping("/api/discounts")
+@CrossOrigin(origins = "http://localhost:3000") // Bật CORS cho địa chỉ này
 public class ControllerDiscount {
 
     @Autowired
     private ServiceDiscount serviceDiscount;
 
-    //  LẤY DANH SÁCH TẤT CẢ KHUYẾN MÃI
     @GetMapping
     public ResponseEntity<List<EntityDiscount>> getAllDiscounts() {
         List<EntityDiscount> discounts = serviceDiscount.findAll();
         return ResponseEntity.ok(discounts);
     }
 
-    //  LẤY THÔNG TIN KHUYẾN MÃI THEO ID
     @GetMapping("/{id}")
     public ResponseEntity<EntityDiscount> getDiscountById(@PathVariable int id) {
         Optional<EntityDiscount> discount = serviceDiscount.findById(id);
@@ -30,7 +28,6 @@ public class ControllerDiscount {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //  LẤY KHUYẾN MÃI THEO GIÁ SALE
     @GetMapping("/saleprice/{salePrice}")
     public ResponseEntity<List<EntityDiscount>> getDiscountsBySalePrice(@PathVariable float salePrice) {
         List<EntityDiscount> discounts = serviceDiscount.findBySalePrice(salePrice);
@@ -39,27 +36,30 @@ public class ControllerDiscount {
         }
         return ResponseEntity.ok(discounts);
     }
-      
-    //  THÊM KHUYẾN MÃI MỚI
+
     @PostMapping
     public ResponseEntity<EntityDiscount> createDiscount(@RequestBody EntityDiscount entityDiscount) {
+        if (entityDiscount.getProduct() == null || entityDiscount.getProduct().getId() == 0) {
+            return ResponseEntity.badRequest().build(); // Kiểm tra product không null và có ID hợp lệ
+        }
         EntityDiscount savedDiscount = serviceDiscount.saveEntityDiscount(entityDiscount);
         return ResponseEntity.ok(savedDiscount);
     }
 
-    //  CẬP NHẬT THÔNG TIN KHUYẾN MÃI
     @PutMapping("/{id}")
     public ResponseEntity<EntityDiscount> updateDiscount(@PathVariable int id, @RequestBody EntityDiscount updatedDiscount) {
         Optional<EntityDiscount> existingDiscount = serviceDiscount.findById(id);
         if (existingDiscount.isPresent()) {
-            updatedDiscount.setId(id); // Đảm bảo ID không thay đổi
+            if (updatedDiscount.getProduct() == null || updatedDiscount.getProduct().getId() == 0) {
+                return ResponseEntity.badRequest().build(); // Kiểm tra product không null và có ID hợp lệ
+            }
+            updatedDiscount.setId(id);
             EntityDiscount savedDiscount = serviceDiscount.saveEntityDiscount(updatedDiscount);
             return ResponseEntity.ok(savedDiscount);
         }
         return ResponseEntity.notFound().build();
     }
 
-    // XOÁ KHUYẾN MÃI THEO ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDiscount(@PathVariable int id) {
         if (serviceDiscount.existsById(id)) {

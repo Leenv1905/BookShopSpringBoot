@@ -70,11 +70,13 @@ public class JwtFilter extends OncePerRequestFilter {
         // ✅ Nếu là /api/auth/login và đăng ký tài khoản (POST /api/user) → Bỏ qua
         // kiểm tra JWT
         if (request.getRequestURI().equals("/api/auth/login")
-        || request.getRequestURI().equals("/api/discounts")
+        || request.getRequestURI().startsWith("/api/discounts")  // startsWith để bao gồm tất cả các đường dẫn con
+        // || request.getRequestURI().equals("/api/discounts/**")
         || request.getRequestURI().equals("/api/supplier")
         || request.getRequestURI().equals("/api/import-products")
         || request.getRequestURI().equals("/api/review")
-        || request.getRequestURI().equals("/api/product")
+        || request.getRequestURI().startsWith("/api/product")
+        // || request.getRequestURI().equals("/api/product/")
         || request.getRequestURI().equals("/api/orders")
 
         || ("POST".equalsIgnoreCase(method) && path.equals("/api/user"))) {

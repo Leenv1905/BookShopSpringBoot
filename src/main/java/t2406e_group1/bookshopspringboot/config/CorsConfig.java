@@ -13,6 +13,7 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                // registry.addMapping("/**") // Allow CORS for all endpoints
                 registry.addMapping("/api/**") // Bật CORS cho tất cả API
                         .allowedOrigins("http://localhost:3000") // Cho phép frontend tại địa chỉ này truy cập
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Các phương thức HTTP được phép
