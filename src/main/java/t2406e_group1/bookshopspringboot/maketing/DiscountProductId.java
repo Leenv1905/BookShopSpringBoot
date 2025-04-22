@@ -1,6 +1,5 @@
-// class DiscountProductId để hỗ trợ khóa chính composite
-
 package t2406e_group1.bookshopspringboot.maketing;
+// class DiscountProductId để hỗ trợ khóa chính composite
 
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;

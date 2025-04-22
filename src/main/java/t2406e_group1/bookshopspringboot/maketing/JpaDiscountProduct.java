@@ -9,4 +9,5 @@ import java.util.List;
 public interface JpaDiscountProduct extends JpaRepository<DiscountProduct, DiscountProductId> {
     void deleteByDiscount(EntityDiscount discount);
     List<DiscountProduct> findByDiscount(EntityDiscount discount);
+    List<DiscountProduct> findByDiscountId(Integer discountId);
 }
