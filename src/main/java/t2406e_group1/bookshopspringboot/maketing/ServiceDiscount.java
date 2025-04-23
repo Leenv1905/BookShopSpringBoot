@@ -158,12 +158,13 @@ public class ServiceDiscount {
             List<DiscountProductDTO> discountProductDTOs = new ArrayList<>();
             for (DiscountProduct dp : discountProducts) {
                 DiscountProductDTO dpDTO = new DiscountProductDTO();
-                // Đảm bảo ánh xạ productId
-                dpDTO.setProductId(Integer.valueOf(dp.getProduct().getId()));
+                // Ánh xạ productId từ DiscountProductId
+                dpDTO.setProductId(Integer.valueOf(dp.getId().getProductId()));
                 dpDTO.setSalePrice(dp.getSalePrice());
                 dpDTO.setQuantity(dp.getQuantity());
 
-                EntityProduct product = jpaProduct.findById(dp.getProduct().getId()).orElse(null);
+                // Lấy thông tin sản phẩm
+                EntityProduct product = dp.getProduct();
                 if (product != null) {
                     dpDTO.setName(product.getName());
                     dpDTO.setPrice(product.getPrice() != null ? product.getPrice().floatValue() : 0.0f);

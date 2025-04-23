@@ -20,10 +20,15 @@ public class ControllerDiscount {
     @Autowired
     private JpaDiscountProduct jpaDiscountProduct;
 
+    // @GetMapping
+    // public ResponseEntity<List<EntityDiscount>> getAllDiscounts() {
+    //     return ResponseEntity.ok(serviceDiscount.findAll());
+    // }
     @GetMapping
-    public ResponseEntity<List<EntityDiscount>> getAllDiscounts() {
-        return ResponseEntity.ok(serviceDiscount.findAll());
-    }
+public ResponseEntity<List<DiscountDTO>> getAllDiscounts() {
+    List<DiscountDTO> discounts = serviceDiscount.getAllDiscount();
+    return ResponseEntity.ok(discounts);
+}
 
     // @GetMapping("/{id}")
     // public ResponseEntity<EntityDiscount> getDiscountById(@PathVariable Integer id) {
