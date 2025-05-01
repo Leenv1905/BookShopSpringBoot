@@ -3,8 +3,9 @@ package t2406e_group1.bookshopspringboot.product.image;
 import java.sql.Date;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +18,7 @@ import t2406e_group1.bookshopspringboot.product.EntityProduct;
 @Entity
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EntityImage {
     
     @Id
@@ -25,7 +27,7 @@ public class EntityImage {
     private String imagePath; // URL của ảnh
     //private int productId; // ID của sản phẩm mà ảnh này thuộc về
 
-    @ManyToOne
+@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     @JsonBackReference
     private EntityProduct product;

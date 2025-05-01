@@ -73,7 +73,7 @@ public class JwtFilter extends OncePerRequestFilter {
         || request.getRequestURI().startsWith("/api/discounts")  // startsWith để bao gồm tất cả các đường dẫn con
         // || request.getRequestURI().equals("/api/discounts/**")
         || request.getRequestURI().equals("/api/supplier")
-        || request.getRequestURI().equals("/api/import-products")
+        || request.getRequestURI().startsWith("/api/import-products")
         || request.getRequestURI().equals("/api/review")
         || request.getRequestURI().startsWith("/api/product")
         // || request.getRequestURI().equals("/api/product/")

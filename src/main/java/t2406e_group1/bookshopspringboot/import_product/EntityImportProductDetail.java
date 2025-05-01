@@ -1,43 +1,44 @@
 package t2406e_group1.bookshopspringboot.import_product;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import t2406e_group1.bookshopspringboot.product.EntityProduct;
 import t2406e_group1.bookshopspringboot.supplier.EntitySupplier;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
+@Table(name = "entity_import_product_details")
 @Getter
 @Setter
-@Table(name = "entity_import_product_details")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EntityImportProductDetail {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "import_product_id", nullable = false)
+    @JoinColumn(name = "import_product_id")
     // Sử dụng @JsonBackReference để tránh vòng lặp vô hạn khi tuần tự hóa JSON
+    // giữa EntityImportProduct và EntityImportProductDetail
     @JsonBackReference
     private EntityImportProduct importProduct;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     private EntityProduct product;
 
-    @Column(nullable = false)
+    @Column(name = "product_name")
     private String productName;
 
-    @Column(nullable = false)
-    private float importPrice;
+    @Column(name = "import_price")
+    private Double importPrice;
 
-    @Column(nullable = false)
-    private int quantity;
+    @Column(name = "quantity")
+    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "supplier_id", nullable = false)
+    @JoinColumn(name = "supplier_id")
     private EntitySupplier supplier;
-
 }

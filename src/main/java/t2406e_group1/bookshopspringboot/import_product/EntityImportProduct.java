@@ -1,35 +1,33 @@
 package t2406e_group1.bookshopspringboot.import_product;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import java.util.ArrayList;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
+@Table(name = "entity_import_product")
 @Getter
 @Setter
-@Table(name = "entity_import_product")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EntityImportProduct {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private Date importDate;
+    @Column(name = "import_date")
+    private LocalDateTime importDate;
 
-    @Column(nullable = false)
-    private int totalQuantity;
+    @Column(name = "total_quantity")
+    private Integer totalQuantity;
 
     @OneToMany(mappedBy = "importProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<EntityImportProductDetail> details = new ArrayList<>();
-
+    private List<EntityImportProductDetail> details;
 }
 
 // Xử lý vòng lặp vô hạn trong phản hồi API. Vấn đề này thường xảy ra do mối quan hệ hai chiều (@OneToMany và @ManyToOne) giữa EntityImportProduct và EntityImportProductDetail gây ra vòng lặp khi tuần tự hóa JSON. Tôi sẽ sửa bằng cách sử dụng @JsonManagedReference và @JsonBackReference để phá vỡ vòng lặp.
