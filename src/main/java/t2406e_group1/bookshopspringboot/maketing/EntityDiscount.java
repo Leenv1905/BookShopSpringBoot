@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +24,11 @@ public class EntityDiscount {
     private List<DiscountProduct> discountProducts = new ArrayList<>();
 
     @Column(name = "date_create")
-    private String dateCreate;
+    private Date dateCreate;
 
     @Column(name = "date_start")
-    private String dateStart;
+    private Date dateStart;
 
     @Column(name = "date_end")
-    private String dateEnd;
+    private Date dateEnd;
 }
