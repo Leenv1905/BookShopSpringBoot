@@ -1,15 +1,13 @@
 package t2406e_group1.bookshopspringboot.maketing;
-// entity DiscountProduct để đại diện cho bảng discount_product
-// Bảng này đảm nhiệm liên kết dữ liệu giữa discount và product
-// Giúp có thể thêm nhiều sản phẩm vào một mã giảm giá
-
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-// import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import t2406e_group1.bookshopspringboot.product.EntityProduct;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -29,7 +27,6 @@ public class DiscountProduct {
     @ManyToOne
     @MapsId("productId")
     @JoinColumn(name = "product_id")
-    // @JsonIgnore
     private EntityProduct product;
 
     @Column(name = "sale_price")
@@ -37,4 +34,47 @@ public class DiscountProduct {
 
     @Column(name = "quantity")
     private Integer quantity;
+
+    @Embeddable
+    public static class DiscountProductId implements Serializable {
+        private Integer discountId;
+        private Integer productId;
+
+        public DiscountProductId() {}
+
+        public DiscountProductId(Integer discountId, Integer productId) {
+            this.discountId = discountId;
+            this.productId = productId;
+        }
+
+        public Integer getDiscountId() {
+            return discountId;
+        }
+
+        public void setDiscountId(Integer discountId) {
+            this.discountId = discountId;
+        }
+
+        public Integer getProductId() {
+            return productId;
+        }
+
+        public void setProductId(Integer productId) {
+            this.productId = productId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            DiscountProductId that = (DiscountProductId) o;
+            return Objects.equals(discountId, that.discountId) &&
+                   Objects.equals(productId, that.productId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(discountId, productId);
+        }
+    }
 }

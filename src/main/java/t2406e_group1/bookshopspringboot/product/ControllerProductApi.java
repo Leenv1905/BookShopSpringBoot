@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/product")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ControllerProductApi {
 
     @Autowired
@@ -21,16 +22,24 @@ public class ControllerProductApi {
 
     // LẤY THÔNG TIN TẤT CẢ SẢN PHẨM
     @GetMapping
-    public List<EntityProduct> getAllProduct() {
-        return serviceProduct.findAll();
+    public List<ProductDTO> getAllProduct() {
+        return serviceProduct.findAllAsDTO();
     }
 
     // LẤY THÔNG TIN SẢN PHẨM THEO ID
     @GetMapping("/{id}")
-    public ResponseEntity<EntityProduct> getProductById(@PathVariable int id) {
-        Optional<EntityProduct> entityProduct = serviceProduct.findById(id);
-        return entityProduct.map(ResponseEntity::ok).orElseGet(() ->
-                ResponseEntity.notFound().build());
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable int id) {
+        Optional<ProductDTO> productDTO = serviceProduct.findByIdAsDTO(id);
+        return productDTO.map(ResponseEntity::ok)
+                        .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // LẤY THÔNG TIN CHI TIẾT SẢN PHẨM THEO ID DÙNG RIÊNG CHO PRODUCTDETAIL
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<ProductDetailDTO> getProductDetailById(@PathVariable int id) {
+        Optional<ProductDetailDTO> productDetailDTO = serviceProduct.findByIdAsDetailDTO(id);
+        return productDetailDTO.map(ResponseEntity::ok)
+                              .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // THÊM MỚI SẢN PHẨM
@@ -72,7 +81,6 @@ public class ControllerProductApi {
         }
     }
 
-
     // LẤY THÔNG TIN TẤT CẢ ẢNH
     @GetMapping("/images")
     public List<EntityImage> getAllImages() {
@@ -83,13 +91,18 @@ public class ControllerProductApi {
     @GetMapping("/{id}/images")
     public ResponseEntity<EntityImage> getProductImageById(@PathVariable int id) {
         Optional<EntityImage> entityImage = serviceImage.findById(id);
-        return entityImage.map(ResponseEntity::ok).orElseGet(() ->
-                ResponseEntity.notFound().build());
+        return entityImage.map(ResponseEntity::ok)
+                         .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // THÊM MỚI ẢNH
     @PostMapping("/images")
-    public EntityImage createProductImage(@RequestBody EntityImage entityImage) {
+    public EntityImage createProductImage(@RequestBody ImageRequest imageRequest) {
+        EntityImage entityImage = new EntityImage();
+        entityImage.setImagePath(imageRequest.getImagePath());
+        EntityProduct product = new EntityProduct();
+        product.setId(imageRequest.getProduct().getId());
+        entityImage.setProduct(product);
         return serviceImage.saveEntityImage(entityImage);
     }
 
@@ -116,6 +129,22 @@ public class ControllerProductApi {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // Inner class for image request
+    public static class ImageRequest {
+        private String imagePath;
+        private ProductId product;
+
+        public String getImagePath() { return imagePath; }
+        public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+        public ProductId getProduct() { return product; }
+        public void setProduct(ProductId product) { this.product = product; }
+
+        public static class ProductId {
+            private int id;
+
+            public int getId() { return id; }
+            public void setId(int id) { this.id = id; }
+        }
+    }
 }
-
-
