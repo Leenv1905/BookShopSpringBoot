@@ -192,6 +192,7 @@ public class ServiceProduct {
                     int discountPercentage = (int) ((product.getPrice() - dp.getSalePrice()) / product.getPrice() * 100);
                     dto.setDiscountPercentage(discountPercentage);
                 }
+                // Tính toán phần trăm giảm giá trên backend
             });
 
         return Optional.of(dto);
