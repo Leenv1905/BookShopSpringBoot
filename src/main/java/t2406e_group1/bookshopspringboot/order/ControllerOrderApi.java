@@ -1,20 +1,16 @@
-// package t2406e_group1.bookshopspringboot.order;
-
-// public class ControllerOrderApi {
-    
-// }
-
 package t2406e_group1.bookshopspringboot.order;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import t2406e_group1.bookshopspringboot.auth.JwtUtil;
+import t2406e_group1.bookshopspringboot.order.details.EntityDetailsOrder;
+import t2406e_group1.bookshopspringboot.product.EntityProduct;
+import t2406e_group1.bookshopspringboot.user.EntityUser;
+import t2406e_group1.bookshopspringboot.user.JpaUser;
 
-import t2406e_group1.bookshopspringboot.review.EntityReview;
-
-// import t2406e_group1.bookshopspringboot.user.EntityUser;
-// import t2406e_group1.bookshopspringboot.user.ServiceUser;
-
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,65 +18,111 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/orders")
-
 public class ControllerOrderApi {
 
     @Autowired
     private ServiceOrder serviceOrder;
 
-    // @Autowired
-    // private ServiceUser serviceUser;
+    @Autowired
+    private JpaUser jpaUser;
 
-    // ✅ 1. Tạo đơn hàng
+    @Autowired
+    private t2406e_group1.bookshopspringboot.product.JpaProduct jpaProduct;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    // Tạo đơn hàng
     @PostMapping
-    public EntityOrder createOrder(@RequestBody EntityOrder entityOrder) {
-    return serviceOrder.saveEntityOrder(entityOrder);
+    public ResponseEntity<?> createOrder(HttpServletRequest request, @RequestBody Map<String, Object> orderData) {
+        // Lấy userId từ request attribute
+        Integer userId = (Integer) request.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(401).body("User ID not found in token");
+        }
+
+        // Kiểm tra userId
+        Optional<EntityUser> userOptional = jpaUser.findById(userId);
+        if (!userOptional.isPresent()) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        // Lấy items
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> items = (List<Map<String, Object>>) orderData.get("items");
+        if (items == null || items.isEmpty()) {
+            return ResponseEntity.status(400).body("Missing or empty items");
+        }
+
+        // Tạo EntityOrder
+        EntityOrder entityOrder = new EntityOrder();
+        entityOrder.setUser(userOptional.get());
+        entityOrder.setOrderDate(new Date());
+        entityOrder.setStatus("Pending");
+
+        // Tạo danh sách EntityDetailsOrder
+        List<EntityDetailsOrder> orderDetails = new ArrayList<>();
+        for (Map<String, Object> item : items) {
+            Integer productId = (Integer) item.get("productId");
+            Integer quantity = (Integer) item.get("quantity");
+            Double price = ((Number) item.get("price")).doubleValue();
+
+            if (productId == null || quantity == null || price == null) {
+                return ResponseEntity.status(400).body("Invalid item data");
+            }
+
+            Optional<EntityProduct> productOptional = jpaProduct.findById(productId);
+            if (!productOptional.isPresent()) {
+                return ResponseEntity.status(404).body("Product not found: " + productId);
+            }
+
+            EntityDetailsOrder detail = new EntityDetailsOrder();
+            detail.setProduct(productOptional.get());
+            detail.setQuantity(quantity);
+            detail.setPrice(price);
+            orderDetails.add(detail);
+        }
+
+        // Lưu đơn hàng
+        EntityOrder savedOrder = serviceOrder.saveEntityOrder(entityOrder, orderDetails);
+        return ResponseEntity.ok(savedOrder);
     }
 
-    // ✅ 2. Xem danh sách đơn hàng
+    // Xem danh sách đơn hàng
     @GetMapping
     public List<EntityOrder> getAllOrders() {
         return serviceOrder.findAll();
     }
 
-    // ✅ 3. Xem chi tiết đơn hàng
+    // Xem chi tiết đơn hàng
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOrderById(@PathVariable int id) {
+    public ResponseEntity<EntityOrder> getOrderById(@PathVariable int id) {
         Optional<EntityOrder> optionalOrder = serviceOrder.findById(id);
-        return optionalOrder.map(order -> ResponseEntity.ok(order))
-        .orElseGet(() -> ResponseEntity.status(404).body(null));
-
+        return optionalOrder.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(404).body((EntityOrder) null));
     }
 
-    // ✅ 4. Cập nhật đơn hàng
-    // @PutMapping("/update/{id}")
-    // public ResponseEntity<?> updateOrder(@PathVariable int id, @RequestBody Map<String, Object> orderData) {
-    //     Optional<EntityOrder> optionalOrder = serviceOrder.findById(id);
-    //     if (!optionalOrder.isPresent()) {
-    //         return ResponseEntity.status(404).body("Đơn hàng không tồn tại!");
-    //     }
-
-    //     EntityOrder order = optionalOrder.get();
-    //     if (orderData.containsKey("status")) {
-    //         order.setStatus((String) orderData.get("status"));
-    //     }
-    //     if (orderData.containsKey("phoneNumber")) {
-    //         order.setPhoneNumber((String) orderData.get("phoneNumber"));
-    //     }
-
-    //     EntityOrder updatedOrder = serviceOrder.save(order);
-    //     return ResponseEntity.ok(updatedOrder);
-    // }
-
-    // ✅ 5. Xóa đơn hàng
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable int id) {
+    // Cập nhật trạng thái đơn hàng
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOrderStatus(@PathVariable int id, @RequestBody String status) {
         Optional<EntityOrder> optionalOrder = serviceOrder.findById(id);
         if (!optionalOrder.isPresent()) {
-            return ResponseEntity.status(404).body("Đơn hàng không tồn tại!");
+            return ResponseEntity.status(404).body("Order not found");
         }
+        EntityOrder order = optionalOrder.get();
+        order.setStatus(status);
+        EntityOrder updatedOrder = serviceOrder.saveEntityOrder(order, order.getOrderDetails());
+        return ResponseEntity.ok(updatedOrder);
+    }
 
+    // Xóa đơn hàng
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteOrder(@PathVariable int id) {
+        Optional<EntityOrder> optionalOrder = serviceOrder.findById(id);
+        if (!optionalOrder.isPresent()) {
+            return ResponseEntity.status(404).body("Order not found");
+        }
         serviceOrder.deleteById(id);
-        return ResponseEntity.ok("Đơn hàng đã được xóa!");
+        return ResponseEntity.ok("Order deleted successfully");
     }
 }

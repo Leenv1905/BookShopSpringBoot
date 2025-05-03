@@ -1,51 +1,45 @@
-// package t2406e_group1.bookshopspringboot.order;
-
-// public class EntityOrder {
-    
-// }
-
 package t2406e_group1.bookshopspringboot.order;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import t2406e_group1.bookshopspringboot.order.details.EntityDetailsOrder;
 import t2406e_group1.bookshopspringboot.user.EntityUser;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
-// @Table(name = "orders") // Tránh lỗi vì "order" là từ khóa SQL
-// @Data
+@Table(name = "orders")
 public class EntityOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // @Column(name = "order_id") // Đảm bảo trùng với cột trong DB
+    @Column(name = "order_id")
     private int id;
 
-    // @ManyToOne
-    // @JoinColumn(name = "user_id", nullable = false)
-    // private EntityUser user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private EntityUser user;
 
-    // @Temporal(TemporalType.TIMESTAMP)
-    // @Column(name = "order_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "order_date", nullable = false)
     private Date orderDate;
 
-    // @Column(nullable = false, length = 50)
+    @Column(nullable = false)
+    private double total;
+
+    @Column(nullable = false, length = 50)
     private String status;
-    
-    // @Column(name = "phone_number", nullable = false)
-    private String phoneNumber;
 
-    // @Temporal(TemporalType.TIMESTAMP)
-    // @Column(name = "date_added", nullable = false, updatable = false, insertable = false)
-    // private Date dateAdded;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<EntityDetailsOrder> orderDetails;
 
-    public EntityOrder() // hàm khởi tạo
-    {
-        // đảm bảo rằng một số trường thông tin quan trọng không bị NULL
-        // khi nó được dùng để cung cấp dữ liệu ra bên ngoài.
-
+    public EntityOrder() {
+        this.orderDate = new Date();
+        this.status = "Pending";
     }
 }
