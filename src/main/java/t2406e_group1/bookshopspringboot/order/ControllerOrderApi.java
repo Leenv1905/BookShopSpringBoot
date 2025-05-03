@@ -58,7 +58,7 @@ public class ControllerOrderApi {
         EntityOrder entityOrder = new EntityOrder();
         entityOrder.setUser(userOptional.get());
         entityOrder.setOrderDate(new Date());
-        entityOrder.setStatus("Pending");
+        entityOrder.setStatus("PENDING");
 
         // Tạo danh sách EntityDetailsOrder
         List<EntityDetailsOrder> orderDetails = new ArrayList<>();
@@ -99,12 +99,16 @@ public class ControllerOrderApi {
     public ResponseEntity<EntityOrder> getOrderById(@PathVariable int id) {
         Optional<EntityOrder> optionalOrder = serviceOrder.findById(id);
         return optionalOrder.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body((EntityOrder) null));
+                .orElseGet(() -> ResponseEntity.status(404).body(null));
     }
 
     // Cập nhật trạng thái đơn hàng
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable int id, @RequestBody String status) {
+    public ResponseEntity<?> updateOrderStatus(@PathVariable int id, @RequestBody Map<String, String> updates) {
+        String status = updates.get("status");
+        if (status == null || !isValidStatus(status)) {
+            return ResponseEntity.status(400).body("Invalid or missing status");
+        }
         Optional<EntityOrder> optionalOrder = serviceOrder.findById(id);
         if (!optionalOrder.isPresent()) {
             return ResponseEntity.status(404).body("Order not found");
@@ -113,6 +117,11 @@ public class ControllerOrderApi {
         order.setStatus(status);
         EntityOrder updatedOrder = serviceOrder.saveEntityOrder(order, order.getOrderDetails());
         return ResponseEntity.ok(updatedOrder);
+    }
+
+    // Kiểm tra trạng thái hợp lệ
+    private boolean isValidStatus(String status) {
+        return status != null && List.of("Pending", "Shipped", "Completed", "Cancelled").contains(status);
     }
 
     // Xóa đơn hàng
